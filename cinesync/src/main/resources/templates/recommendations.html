@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendations | CineSync</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark">C</span>
+            <span>CineSync</span>
+        </a>
+        <nav class="nav">
+            <a class="nav-link" th:href="@{/}">Home</a>
+            <a class="nav-link" th:href="@{/movies}">Movies</a>
+            <a class="nav-link" th:href="@{/theatres}">Theatres</a>
+            <a class="nav-link" th:href="@{/shows}">Shows</a>
+            <a class="nav-link active" th:href="@{/recommendations}">Recommendations</a>
+            <a class="nav-link" th:href="@{/watchlist}">Watchlist</a>
+            <a class="nav-link" th:href="@{/preferences}">Preferences</a>
+        </nav>
+        <div class="nav-actions">
+            <a class="btn btn-secondary" th:href="@{/profile}">Profile</a>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn btn-primary" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="page-shell section">
+    <div class="heading-block">
+        <h2>Recommended for you</h2>
+        <p>Personalized picks based on your preferences, nearby theatre locations, and local weather context.</p>
+    </div>
+
+    <section class="preferences-card">
+        <h2>Your location</h2>
+        <form method="get" th:action="@{/recommendations}" class="form-grid">
+            <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                <div class="field">
+                    <label for="lat">Latitude</label>
+                    <input class="input" id="lat" name="lat" type="number" step="any" placeholder="e.g. 12.9716" th:value="${lat}" required>
+                </div>
+                <div class="field">
+                    <label for="lon">Longitude</label>
+                    <input class="input" id="lon" name="lon" type="number" step="any" placeholder="e.g. 77.5946" th:value="${lon}" required>
+                </div>
+            </div>
+            <div class="form-actions" style="margin-top: 0;">
+                <button class="btn btn-primary" type="submit">Get recommendations</button>
+            </div>
+        </form>
+    </section>
+
+    <div class="alert" th:if="${error}" role="alert">
+        <span th:text="${error}">Could not generate recommendations.</span>
+    </div>
+
+    <div th:if="${hasResults and weatherCondition != null}" class="panel" style="margin-top: 1.4rem;">
+        <h3>Weather context</h3>
+        <p><strong th:text="${weatherCondition}">Clear sky</strong> · <span th:text="${#numbers.formatDecimal(temperature,1,0)} + '°C'">22°C</span> · Weather input factored into your recommendations.</p>
+    </div>
+
+    <div th:if="${hasResults and weatherFallback == true}" class="alert" style="margin-top: 1.2rem;">
+        Weather information is currently unavailable. Recommendations continue with a conservative weather score.
+    </div>
+
+    <section th:if="${hasResults and #lists.isEmpty(recommendations)}" class="empty-state" style="margin-top: 1.4rem;">
+        <span class="icon">🎭</span>
+        <p>No recommendations available yet.</p>
+        <a class="btn btn-primary" th:href="@{/shows}">View all shows</a>
+    </section>
+
+    <section th:if="${hasResults and !#lists.isEmpty(recommendations)}" class="recommendation-grid" style="margin-top: 1.4rem;">
+        <article class="recommendation-card" th:each="rec : ${recommendations}">
+            <div class="recommendation-header">
+                <div>
+                    <h3 th:text="${rec.movie.title}">Movie title</h3>
+                    <div class="meta-list">
+                        <span class="tag" th:each="genre : ${rec.movie.genres}" th:text="${genre}">Genre</span>
+                    </div>
+                </div>
+                <span class="score-pill" th:text="${#numbers.formatDecimal(rec.experienceScore,1,1)} + '%'">92.2%</span>
+            </div>
+
+            <div class="score-grid">
+                <div class="score-box">
+                    <span class="label">Rating</span>
+                    <strong th:text="${#numbers.formatDecimal(rec.ratingScore,1,0)}">82</strong>
+                </div>
+                <div class="score-box">
+                    <span class="label">Genre</span>
+                    <strong th:text="${#numbers.formatDecimal(rec.genreScore,1,0)}">90</strong>
+                </div>
+                <div class="score-box">
+                    <span class="label">Distance</span>
+                    <strong th:text="${#numbers.formatDecimal(rec.distanceScore,1,0)}">75</strong>
+                </div>
+                <div class="score-box">
+                    <span class="label">Weather</span>
+                    <strong th:text="${#numbers.formatDecimal(rec.weatherScore,1,0)}">88</strong>
+                </div>
+                <div class="score-box">
+                    <span class="label">Showtime</span>
+                    <strong th:text="${#numbers.formatDecimal(rec.showtimeScore,1,0)}">96</strong>
+                </div>
+            </div>
+
+            <div class="meta-item">Theatre: <strong th:text="${rec.show.theatre.name}">Theatre</strong></div>
+            <div class="meta-item">Showtime: <span th:text="${#temporals.format(rec.show.showtime, 'dd MMM, HH:mm')}">01 Jan 18:30</span></div>
+            <div class="meta-item">Distance: <span th:text="${#numbers.formatDecimal(rec.distanceKm,1,1)} + ' km'">5.2 km</span></div>
+            <div class="meta-item">Movie rating: <span th:text="${rec.movie.rating != null ? rec.movie.rating + '/10' : 'N/A'}">8.5/10</span></div>
+
+            <ul class="reason-list">
+                <li th:each="reason : ${rec.reasons}" th:text="${reason}">Reason</li>
+            </ul>
+        </article>
+    </section>
+</main>
+</body>
+</html>

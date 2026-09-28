@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://cinesync.com/soap"
+           xmlns:tns="http://cinesync.com/soap"
+           elementFormDefault="qualified">
+
+    <!-- ============================================================ -->
+    <!-- 1. getUserProfile                                            -->
+    <!-- ============================================================ -->
+    <xs:element name="getUserProfileRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getUserProfileResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="userId" type="xs:long"/>
+                <xs:element name="username" type="xs:string"/>
+                <xs:element name="email" type="xs:string"/>
+                <xs:element name="fullName" type="xs:string"/>
+                <xs:element name="role" type="xs:string"/>
+                <xs:element name="enabled" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ============================================================ -->
+    <!-- 2. updateUserPreferences                                     -->
+    <!-- ============================================================ -->
+    <xs:element name="updateUserPreferencesRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+                <xs:element name="genres" type="xs:string" minOccurs="0"/>
+                <xs:element name="genreIds" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="preferredShowtime" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updateUserPreferencesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="updated" type="xs:boolean"/>
+                <xs:element name="message" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ============================================================ -->
+    <!-- 3. addToWatchlist                                            -->
+    <!-- ============================================================ -->
+    <xs:element name="addToWatchlistRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+                <xs:element name="movieId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="addToWatchlistResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="added" type="xs:boolean"/>
+                <xs:element name="message" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ============================================================ -->
+    <!-- 4. removeFromWatchlist                                       -->
+    <!-- ============================================================ -->
+    <xs:element name="removeFromWatchlistRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+                <xs:element name="movieId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="removeFromWatchlistResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="removed" type="xs:boolean"/>
+                <xs:element name="message" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ============================================================ -->
+    <!-- 5. getWatchlist                                              -->
+    <!-- ============================================================ -->
+    <xs:element name="getWatchlistRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getWatchlistResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="items" type="tns:watchlistItemSoapDto" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="watchlistItemSoapDto">
+        <xs:sequence>
+            <xs:element name="movieId" type="xs:long"/>
+            <xs:element name="title" type="xs:string"/>
+            <xs:element name="overview" type="xs:string" minOccurs="0"/>
+            <xs:element name="rating" type="xs:double" minOccurs="0"/>
+            <xs:element name="posterUrl" type="xs:string" minOccurs="0"/>
+            <xs:element name="genres" type="xs:string" minOccurs="0"/>
+            <xs:element name="addedAt" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ============================================================ -->
+    <!-- 6. createReservation                                         -->
+    <!-- ============================================================ -->
+    <xs:element name="createReservationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+                <xs:element name="showId" type="xs:long"/>
+                <xs:element name="seats" type="xs:string" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="createReservationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="reservationId" type="xs:long"/>
+                <xs:element name="showId" type="xs:long"/>
+                <xs:element name="movieTitle" type="xs:string"/>
+                <xs:element name="theatreName" type="xs:string"/>
+                <xs:element name="showtime" type="xs:string"/>
+                <xs:element name="seats" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="status" type="xs:string"/>
+                <xs:element name="createdAt" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ============================================================ -->
+    <!-- 7. cancelReservation                                         -->
+    <!-- ============================================================ -->
+    <xs:element name="cancelReservationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+                <xs:element name="reservationId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="cancelReservationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="cancelled" type="xs:boolean"/>
+                <xs:element name="message" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ============================================================ -->
+    <!-- 8. getReservations                                           -->
+    <!-- ============================================================ -->
+    <xs:element name="getReservationsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getReservationsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="reservations" type="tns:reservationSoapDto" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="reservationSoapDto">
+        <xs:sequence>
+            <xs:element name="reservationId" type="xs:long"/>
+            <xs:element name="showId" type="xs:long"/>
+            <xs:element name="movieTitle" type="xs:string"/>
+            <xs:element name="theatreName" type="xs:string"/>
+            <xs:element name="showtime" type="xs:string"/>
+            <xs:element name="seats" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="status" type="xs:string"/>
+            <xs:element name="createdAt" type="xs:string"/>
+            <xs:element name="cancelledAt" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select seats | CineSync</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark">C</span>
+            <span>CineSync</span>
+        </a>
+        <nav class="nav">
+            <a class="nav-link" th:href="@{/}">Home</a>
+            <a class="nav-link" th:href="@{/movies}">Movies</a>
+            <a class="nav-link" th:href="@{/theatres}">Theatres</a>
+            <a class="nav-link" th:href="@{/shows}">Shows</a>
+            <a class="nav-link" th:href="@{/recommendations}">Recommendations</a>
+            <a class="nav-link" th:href="@{/watchlist}">Watchlist</a>
+            <a class="nav-link" th:href="@{/preferences}">Preferences</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page-shell section">
+    <div class="heading-block">
+        <h2>Select your seats</h2>
+        <p>Choose the seats you want for this show.</p>
+    </div>
+
+    <div class="alert" th:if="${error}" role="alert">
+        <span th:text="${error}">Seat selection error</span>
+    </div>
+
+    <section class="panel seat-shell">
+        <div class="screen-label">Screen</div>
+        <div class="screen"></div>
+        <form method="post" th:action="@{/reservations}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="showId" th:value="${showId}">
+            <input type="hidden" name="seats" id="selectedSeats">
+
+            <div class="seat-grid">
+                <button type="button" class="seat" th:each="seat : ${availability.allSeats}"
+                        th:text="${seat}" th:data-seat="${seat}"
+                        th:classappend="${availability.bookedSeats.contains(seat)} ? ' booked' : ''"
+                        th:disabled="${availability.bookedSeats.contains(seat)}"> </button>
+            </div>
+
+            <div class="seat-summary">
+                <div>
+                    <span>Selected seats: </span>
+                    <output id="selectedCount" class="summary-badge">0</output>
+                </div>
+                <button class="btn btn-primary" type="submit">Reserve selected seats</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<script>
+  const selected = new Set();
+  document.querySelectorAll('.seat:not(:disabled)').forEach(button => {
+    button.addEventListener('click', () => {
+      const seat = button.dataset.seat;
+      if (selected.has(seat)) {
+        selected.delete(seat);
+        button.classList.remove('selected');
+      } else {
+        selected.add(seat);
+        button.classList.add('selected');
+      }
+      document.querySelector('#selectedSeats').value = [...selected].join(',');
+      document.querySelector('#selectedCount').textContent = selected.size;
+    });
+  });
+</script>
+</body>
+</html>

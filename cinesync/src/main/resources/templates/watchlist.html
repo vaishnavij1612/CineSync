@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchlist | CineSync</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark">C</span>
+            <span>CineSync</span>
+        </a>
+        <nav class="nav">
+            <a class="nav-link" th:href="@{/}">Home</a>
+            <a class="nav-link" th:href="@{/movies}">Movies</a>
+            <a class="nav-link" th:href="@{/theatres}">Theatres</a>
+            <a class="nav-link" th:href="@{/shows}">Shows</a>
+            <a class="nav-link" th:href="@{/recommendations}">Recommendations</a>
+            <a class="nav-link active" th:href="@{/watchlist}">Watchlist</a>
+            <a class="nav-link" th:href="@{/preferences}">Preferences</a>
+        </nav>
+        <div class="nav-actions">
+            <a class="btn btn-secondary" th:href="@{/profile}">Profile</a>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn btn-primary" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="page-shell section">
+    <div class="heading-block">
+        <h2>Your watchlist</h2>
+        <p>Save the movies you want to revisit and book later.</p>
+    </div>
+
+    <p th:if="${param.updated}" class="alert">Watchlist updated.</p>
+    <p th:if="${watchlistError}" class="alert" th:text="${watchlistError}" role="alert"></p>
+
+    <section th:if="${#lists.isEmpty(watchlist)}" class="empty-state">
+        <span class="icon">✨</span>
+        <p>No movies in your watchlist yet.</p>
+        <a class="btn btn-primary" th:href="@{/movies}">Explore movies</a>
+    </section>
+
+    <section th:unless="${#lists.isEmpty(watchlist)}" class="watchlist-grid">
+        <article class="watchlist-card" th:each="item : ${watchlist}">
+            <div class="poster-wrap">
+                <img class="movie-poster"
+                     th:if="${item.movie.posterUrl != null and !#strings.isEmpty(item.movie.posterUrl)}"
+                     th:src="${item.movie.posterUrl}"
+                     th:alt="${item.movie.title} + ' poster'"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="poster-placeholder" th:if="${item.movie.posterUrl == null or #strings.isEmpty(item.movie.posterUrl)}">
+                    <span class="icon">🎞️</span>
+                    <span>Poster unavailable</span>
+                </div>
+                <div class="poster-placeholder" style="display:none;">
+                    <span class="icon">🎞️</span>
+                    <span>Poster unavailable</span>
+                </div>
+            </div>
+            <div class="watchlist-body">
+                <h3 th:text="${item.movie.title}">Movie</h3>
+                <div class="meta-list" th:if="${item.movie.genres != null and !item.movie.genres.isEmpty()}">
+                    <span class="tag" th:each="genre : ${item.movie.genres}" th:text="${genre}">Genre</span>
+                </div>
+                <p class="watchlist-meta">Rating: <strong th:text="${item.movie.rating != null ? item.movie.rating + '/10' : 'N/A'}">8.7/10</strong></p>
+                <p class="watchlist-meta">Release date: <span th:text="${item.movie.releaseDate != null ? item.movie.releaseDate : 'TBA'}">2024-01-01</span></p>
+                <p class="watchlist-meta">Added: <span th:text="${#temporals.format(item.addedAt, 'dd MMM yyyy')}">01 Jan 2024</span></p>
+                <div class="card-actions">
+                    <a class="btn btn-secondary" th:href="@{/movies}">Browse more</a>
+                    <form th:action="@{/watchlist/remove/{id}(id=${item.movie.id})}" method="post" style="margin: 0;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button class="btn btn-danger" type="submit">Remove</button>
+                    </form>
+                </div>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>

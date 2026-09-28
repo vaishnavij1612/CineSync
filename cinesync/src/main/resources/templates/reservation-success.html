@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation confirmed | CineSync</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark">C</span>
+            <span>CineSync</span>
+        </a>
+        <nav class="nav">
+            <a class="nav-link" th:href="@{/}">Home</a>
+            <a class="nav-link" th:href="@{/movies}">Movies</a>
+            <a class="nav-link" th:href="@{/theatres}">Theatres</a>
+            <a class="nav-link" th:href="@{/shows}">Shows</a>
+            <a class="nav-link" th:href="@{/watchlist}">Watchlist</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page-shell section">
+    <section class="panel">
+        <div class="heading-block">
+            <h2>Reservation confirmed</h2>
+            <p>Your seats are locked in and ready for the show.</p>
+        </div>
+
+        <div class="profile-metrics">
+            <div class="profile-row">
+                <span class="label">Reservation ID</span>
+                <span class="value" th:text="${reservation.id}">#1</span>
+            </div>
+            <div class="profile-row">
+                <span class="label">Movie</span>
+                <span class="value" th:text="${reservation.show.movie.title}">Movie Title</span>
+            </div>
+            <div class="profile-row">
+                <span class="label">Theatre</span>
+                <span class="value" th:text="${reservation.show.theatre.name}">Theatre</span>
+            </div>
+            <div class="profile-row">
+                <span class="label">Showtime</span>
+                <span class="value" th:text="${#temporals.format(reservation.show.showtime, 'dd MMM yyyy • HH:mm')}">01 Jan 2026 • 18:30</span>
+            </div>
+            <div class="profile-row">
+                <span class="label">Seats</span>
+                <span class="value" th:text="${reservation.seats.![seatNumber]}">A1, A2</span>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <a class="btn btn-primary" th:href="@{/movies}">Back to movies</a>
+            <a class="btn btn-secondary" th:href="@{/shows}">Continue browsing</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

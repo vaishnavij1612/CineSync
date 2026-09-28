@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theatres | CineSync</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark">C</span>
+            <span>CineSync</span>
+        </a>
+        <nav class="nav">
+            <a class="nav-link" th:href="@{/}">Home</a>
+            <a class="nav-link" th:href="@{/movies}">Movies</a>
+            <a class="nav-link active" th:href="@{/theatres}">Theatres</a>
+            <a class="nav-link" th:href="@{/shows}">Shows</a>
+            <a class="nav-link" th:href="@{/recommendations}">Recommendations</a>
+            <a class="nav-link" th:href="@{/watchlist}">Watchlist</a>
+            <a class="nav-link" th:href="@{/preferences}">Preferences</a>
+        </nav>
+        <div class="nav-actions">
+            <a class="btn btn-secondary" th:href="@{/profile}">Profile</a>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn btn-primary" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="page-shell section">
+    <div class="heading-block">
+        <h2>Browse theatres</h2>
+        <p>Find the right venue for your next movie outing.</p>
+    </div>
+
+    <section th:if="${#lists.isEmpty(theatres)}" class="empty-state">
+        <span class="icon">📍</span>
+        <p>No theatres available.</p>
+        <a class="btn btn-primary" th:href="@{/shows}">View shows</a>
+    </section>
+
+    <section th:unless="${#lists.isEmpty(theatres)}" class="theatre-grid">
+        <article class="theatre-card" th:each="theatre : ${theatres}">
+            <div class="theatre-body">
+                <h3 th:text="${theatre.name}">Theatre name</h3>
+                <p class="theatre-address" th:text="${theatre.address != null ? theatre.address : 'Address unavailable'}">Address</p>
+                <div class="meta-item">Status: <strong th:text="${theatre.status}">ACTIVE</strong></div>
+                <div class="meta-item" th:if="${theatre.latitude != null and theatre.longitude != null}">Location: <span th:text="${theatre.latitude + ', ' + theatre.longitude}">0, 0</span></div>
+                <div class="meta-item" th:unless="${theatre.latitude != null and theatre.longitude != null}">Location: <span>Coordinates unavailable</span></div>
+                <div class="card-actions">
+                    <span class="status-pill" th:text="${theatre.status}">ACTIVE</span>
+                    <a class="btn btn-secondary" th:href="@{/shows}">View shows</a>
+                </div>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>

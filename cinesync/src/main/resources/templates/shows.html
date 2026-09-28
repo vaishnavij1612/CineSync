@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shows | CineSync</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark">C</span>
+            <span>CineSync</span>
+        </a>
+        <nav class="nav">
+            <a class="nav-link" th:href="@{/}">Home</a>
+            <a class="nav-link" th:href="@{/movies}">Movies</a>
+            <a class="nav-link" th:href="@{/theatres}">Theatres</a>
+            <a class="nav-link active" th:href="@{/shows}">Shows</a>
+            <a class="nav-link" th:href="@{/recommendations}">Recommendations</a>
+            <a class="nav-link" th:href="@{/watchlist}">Watchlist</a>
+            <a class="nav-link" th:href="@{/preferences}">Preferences</a>
+        </nav>
+        <div class="nav-actions">
+            <a class="btn btn-secondary" th:href="@{/profile}">Profile</a>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn btn-primary" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="page-shell section">
+    <div class="heading-block">
+        <h2>Upcoming shows</h2>
+        <p>Choose a screening and reserve the seats that fit your night.</p>
+    </div>
+
+    <section th:if="${#lists.isEmpty(shows)}" class="empty-state">
+        <span class="icon">🎟️</span>
+        <p>No upcoming shows are available yet.</p>
+        <a class="btn btn-primary" th:href="@{/movies}">Explore movies</a>
+    </section>
+
+    <section th:unless="${#lists.isEmpty(shows)}" class="show-grid">
+        <article class="show-card" th:each="show : ${shows}">
+            <div class="show-body">
+                <h3 th:text="${show.movie.title}">Movie title</h3>
+                <p class="show-detail"><strong>Theatre:</strong> <span th:text="${show.theatre.name}">Theatre</span></p>
+                <p class="show-detail"><strong>When:</strong> <span th:text="${#temporals.format(show.showtime, 'dd MMM yyyy • HH:mm')}">01 Jan 2026 • 18:30</span></p>
+                <p class="show-detail"><strong>Status:</strong> <span th:text="${show.status}">SCHEDULED</span></p>
+                <p class="show-detail"><strong>Seats available:</strong> <span th:text="${show.seatCapacity - show.bookedSeats} + ' / ' + ${show.seatCapacity}">20 / 30</span></p>
+                <div class="card-actions">
+                    <span class="tag" th:text="${show.status}">SCHEDULED</span>
+                    <a class="btn btn-primary" th:href="@{/reservations/shows/{id}/seats(id=${show.id})}">Book now</a>
+                </div>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>

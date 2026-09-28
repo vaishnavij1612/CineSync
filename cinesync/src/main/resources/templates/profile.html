@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | CineSync</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark">C</span>
+            <span>CineSync</span>
+        </a>
+        <nav class="nav">
+            <a class="nav-link" th:href="@{/}">Home</a>
+            <a class="nav-link" th:href="@{/movies}">Movies</a>
+            <a class="nav-link" th:href="@{/theatres}">Theatres</a>
+            <a class="nav-link" th:href="@{/shows}">Shows</a>
+            <a class="nav-link" th:href="@{/recommendations}">Recommendations</a>
+            <a class="nav-link" th:href="@{/watchlist}">Watchlist</a>
+            <a class="nav-link" th:href="@{/preferences}">Preferences</a>
+        </nav>
+        <div class="nav-actions">
+            <a class="btn btn-secondary" th:href="@{/profile}">Profile</a>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn btn-primary" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="page-shell section">
+    <div class="profile-shell">
+        <section class="profile-header">
+            <div class="profile-avatar" th:text="${user.fullName != null and !#strings.isEmpty(user.fullName) ? #strings.substring(user.fullName, 0, 1).toUpperCase() : #strings.substring(user.username, 0, 1).toUpperCase()}">V</div>
+            <div class="profile-identity">
+                <span class="profile-badge" th:text="${user.role}">USER</span>
+                <h2 th:text="${user.fullName != null and !#strings.isEmpty(user.fullName) ? user.fullName : user.username}">Vaishnavi J</h2>
+                <p class="profile-handle" th:text="'@' + ${user.username}">@vaish</p>
+            </div>
+        </section>
+
+        <div class="profile-grid">
+            <section class="panel">
+                <h3>Account Information</h3>
+                <div class="profile-metrics">
+                    <div class="profile-row">
+                        <span class="label">Username</span>
+                        <span class="value" th:text="${user.username}">username</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="label">Email</span>
+                        <span class="value" th:text="${user.email}">email@example.com</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="label">Full Name</span>
+                        <span class="value" th:text="${user.fullName}">Full Name</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="label">Role</span>
+                        <span class="value" th:text="${user.role}">USER</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="label">Member Since</span>
+                        <span class="value" th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd MMM yyyy') : 'Recently'}">24 Oct 2026</span>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="panel">
+                <h3>Your CineSync</h3>
+                <div class="quick-link-list">
+                    <a class="quick-link" th:href="@{/preferences}"><span>Preferences</span><span>→</span></a>
+                    <a class="quick-link" th:href="@{/watchlist}"><span>Watchlist</span><span>→</span></a>
+                    <a class="quick-link" th:href="@{/recommendations}"><span>Recommendations</span><span>→</span></a>
+                    <a class="quick-link" th:href="@{/movies}"><span>Movies</span><span>→</span></a>
+                </div>
+
+                <div class="profile-actions">
+                    <a class="btn btn-secondary" th:href="@{/movies}">Browse Movies</a>
+                    <a class="btn btn-primary" th:href="@{/recommendations}">Get Recommendations</a>
+                </div>
+
+                <div class="profile-actions" style="margin-top: 1.5rem;">
+                    <form th:action="@{/logout}" method="post" style="margin: 0; width: 100%;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button class="btn btn-danger" type="submit" style="width: 100%;">Logout</button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    </div>
+</main>
+</body>
+</html>

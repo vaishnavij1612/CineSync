@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preferences | CineSync</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark">C</span>
+            <span>CineSync</span>
+        </a>
+        <nav class="nav">
+            <a class="nav-link" th:href="@{/}">Home</a>
+            <a class="nav-link" th:href="@{/movies}">Movies</a>
+            <a class="nav-link" th:href="@{/theatres}">Theatres</a>
+            <a class="nav-link" th:href="@{/shows}">Shows</a>
+            <a class="nav-link" th:href="@{/recommendations}">Recommendations</a>
+            <a class="nav-link" th:href="@{/watchlist}">Watchlist</a>
+            <a class="nav-link active" th:href="@{/preferences}">Preferences</a>
+        </nav>
+        <div class="nav-actions">
+            <a class="btn btn-secondary" th:href="@{/profile}">Profile</a>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn btn-primary" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="page-shell section">
+    <div class="heading-block">
+        <h2>Customize your preferences</h2>
+        <p>Fine-tune what CineSync recommends to match your movie tastes and viewing habits.</p>
+    </div>
+
+    <p th:if="${param.updated}" class="alert">Preferences saved.</p>
+    <p th:if="${preferenceError}" class="alert" th:text="${preferenceError}" role="alert"></p>
+
+    <section class="preferences-card">
+        <form th:action="@{/preferences}" th:object="${preferenceForm}" method="post" class="form-grid">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+            <div class="field">
+                <label>Preferred genres</label>
+                <div class="checkbox-grid">
+                    <label class="option-chip" th:each="genre : ${genres}">
+                        <input type="checkbox" th:field="*{genreIds}" th:value="${genre.id}">
+                        <span th:text="${genre.name}">Genre</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="showtimePreference">Preferred showtime</label>
+                <select class="select" id="showtimePreference" th:field="*{showtimePreference}">
+                    <option th:each="option : ${showtimePreferences}" th:value="${option}" th:text="${option}">ANY</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Save preferences</button>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>
